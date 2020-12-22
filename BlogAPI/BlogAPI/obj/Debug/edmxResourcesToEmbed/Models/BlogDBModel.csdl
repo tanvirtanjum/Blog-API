@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BlogDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="blog">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="post_by" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="comment_count" Type="Int32" />
+    <NavigationProperty Name="login" Relationship="Self.FK_blogs_logins" FromRole="blogs" ToRole="logins" />
+    <NavigationProperty Name="comments" Relationship="Self.FK_comments_comments" FromRole="blogs" ToRole="comments" />
+  </EntityType>
+  <EntityType Name="comment">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="comment1" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="post_id" Type="Int32" />
+    <Property Name="commet_by" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="blog" Relationship="Self.FK_comments_comments" FromRole="comments" ToRole="blogs" />
+    <NavigationProperty Name="login" Relationship="Self.FK_comments_logins" FromRole="comments" ToRole="logins" />
+  </EntityType>
+  <EntityType Name="login">
+    <Key>
+      <PropertyRef Name="username" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="username" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="password" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="blogs" Relationship="Self.FK_blogs_logins" FromRole="logins" ToRole="blogs" />
+    <NavigationProperty Name="comments" Relationship="Self.FK_comments_logins" FromRole="logins" ToRole="comments" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <Association Name="FK_blogs_logins">
+    <End Role="logins" Type="Self.login" Multiplicity="1" />
+    <End Role="blogs" Type="Self.blog" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="logins">
+        <PropertyRef Name="username" />
+      </Principal>
+      <Dependent Role="blogs">
+        <PropertyRef Name="post_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_comments_comments">
+    <End Role="blogs" Type="Self.blog" Multiplicity="0..1" />
+    <End Role="comments" Type="Self.comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="blogs">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="comments">
+        <PropertyRef Name="post_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_comments_logins">
+    <End Role="logins" Type="Self.login" Multiplicity="0..1" />
+    <End Role="comments" Type="Self.comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="logins">
+        <PropertyRef Name="username" />
+      </Principal>
+      <Dependent Role="comments">
+        <PropertyRef Name="commet_by" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="BlogDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="blogs" EntityType="Self.blog" />
+    <EntitySet Name="comments" EntityType="Self.comment" />
+    <EntitySet Name="logins" EntityType="Self.login" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <AssociationSet Name="FK_blogs_logins" Association="Self.FK_blogs_logins">
+      <End Role="logins" EntitySet="logins" />
+      <End Role="blogs" EntitySet="blogs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_comments_comments" Association="Self.FK_comments_comments">
+      <End Role="blogs" EntitySet="blogs" />
+      <End Role="comments" EntitySet="comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_comments_logins" Association="Self.FK_comments_logins">
+      <End Role="logins" EntitySet="logins" />
+      <End Role="comments" EntitySet="comments" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
